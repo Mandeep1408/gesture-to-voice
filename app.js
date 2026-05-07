@@ -171,7 +171,6 @@ function detectGesture(landmarks) {
     landmarks[20].y < landmarks[18].y;
 
   // A = 1 finger
-
   if (
     indexUp &&
     !middleUp &&
@@ -182,7 +181,6 @@ function detectGesture(landmarks) {
   }
 
   // B = 2 fingers
-
   if (
     indexUp &&
     middleUp &&
@@ -193,7 +191,6 @@ function detectGesture(landmarks) {
   }
 
   // C = 3 fingers
-
   if (
     indexUp &&
     middleUp &&
@@ -204,7 +201,6 @@ function detectGesture(landmarks) {
   }
 
   // D = 4 fingers
-
   if (
     indexUp &&
     middleUp &&
@@ -215,7 +211,6 @@ function detectGesture(landmarks) {
   }
 
   // E = fist
-
   if (
     !indexUp &&
     !middleUp &&
@@ -226,7 +221,6 @@ function detectGesture(landmarks) {
   }
 
   // F = pinky only
-
   if (
     !indexUp &&
     !middleUp &&
@@ -237,7 +231,6 @@ function detectGesture(landmarks) {
   }
 
   // G = rock sign
-
   if (
     indexUp &&
     !middleUp &&
@@ -248,7 +241,6 @@ function detectGesture(landmarks) {
   }
 
   // H = thumbs up
-
   if (
     thumbUp &&
     !indexUp &&
@@ -262,7 +254,7 @@ function detectGesture(landmarks) {
   return null;
 }
 
-// ================= GESTURE UPDATE =================
+// ================= UPDATE GESTURE =================
 
 function updateGesture(gesture) {
 
@@ -402,7 +394,17 @@ function signUp() {
 
   auth.createUserWithEmailAndPassword(email, password)
 
-    .then(() => {
+    .then((userCredential) => {
+
+      const user = userCredential.user;
+
+      db.collection('users').doc(user.uid).set({
+
+        email: user.email,
+
+        createdAt: new Date().toLocaleString()
+
+      });
 
       alert('Account Created Successfully');
 
@@ -448,7 +450,7 @@ function login() {
     });
 }
 
-// AUTO LOGIN
+// AUTO LOGIN CHECK
 
 auth.onAuthStateChanged((user) => {
 
