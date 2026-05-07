@@ -6,6 +6,8 @@ let lastGesture = '';
 let holdTimer = null;
 let cameraStarted = false;
 
+// ================= CAMERA =================
+
 async function startCamera() {
 
   if (cameraStarted) return;
@@ -25,6 +27,7 @@ async function startCamera() {
     });
 
     video.srcObject = stream;
+
     video.play();
 
     status.textContent = 'ONLINE';
@@ -47,9 +50,12 @@ async function startCamera() {
   }
 }
 
+// ================= MEDIAPIPE =================
+
 function setupMediaPipe(video) {
 
   const canvas = document.getElementById('canvas');
+
   const ctx = canvas.getContext('2d');
 
   const hands = new Hands({
@@ -130,15 +136,22 @@ function setupMediaPipe(video) {
   });
 
   const camera = new Camera(video, {
+
     onFrame: async () => {
+
       await hands.send({ image: video });
+
     },
+
     width: 1280,
     height: 720
+
   });
 
   camera.start();
 }
+
+// ================= GESTURE DETECTION =================
 
 function detectGesture(landmarks) {
 
@@ -158,6 +171,7 @@ function detectGesture(landmarks) {
     landmarks[20].y < landmarks[18].y;
 
   // A = 1 finger
+
   if (
     indexUp &&
     !middleUp &&
@@ -168,6 +182,7 @@ function detectGesture(landmarks) {
   }
 
   // B = 2 fingers
+
   if (
     indexUp &&
     middleUp &&
@@ -178,6 +193,7 @@ function detectGesture(landmarks) {
   }
 
   // C = 3 fingers
+
   if (
     indexUp &&
     middleUp &&
@@ -188,6 +204,7 @@ function detectGesture(landmarks) {
   }
 
   // D = 4 fingers
+
   if (
     indexUp &&
     middleUp &&
@@ -198,6 +215,7 @@ function detectGesture(landmarks) {
   }
 
   // E = fist
+
   if (
     !indexUp &&
     !middleUp &&
@@ -208,6 +226,7 @@ function detectGesture(landmarks) {
   }
 
   // F = pinky only
+
   if (
     !indexUp &&
     !middleUp &&
@@ -218,6 +237,7 @@ function detectGesture(landmarks) {
   }
 
   // G = rock sign
+
   if (
     indexUp &&
     !middleUp &&
@@ -228,6 +248,7 @@ function detectGesture(landmarks) {
   }
 
   // H = thumbs up
+
   if (
     thumbUp &&
     !indexUp &&
@@ -241,6 +262,8 @@ function detectGesture(landmarks) {
   return null;
 }
 
+// ================= GESTURE UPDATE =================
+
 function updateGesture(gesture) {
 
   if (gesture !== lastGesture) {
@@ -250,10 +273,14 @@ function updateGesture(gesture) {
     clearTimeout(holdTimer);
 
     holdTimer = setTimeout(() => {
+
       addLetter(gesture);
+
     }, 1500);
   }
 }
+
+// ================= ADD LETTER =================
 
 function addLetter(letter) {
 
@@ -267,6 +294,8 @@ function addLetter(letter) {
   document.getElementById('letterCount').textContent =
     letterCount;
 }
+
+// ================= ADD SPACE =================
 
 function addSpace() {
 
@@ -288,6 +317,8 @@ function addSpace() {
   }
 }
 
+// ================= SPEAK =================
+
 function speakSentence() {
 
   const text =
@@ -307,6 +338,8 @@ function speakSentence() {
   }
 }
 
+// ================= CLEAR =================
+
 function clearAll() {
 
   currentWord = '';
@@ -324,15 +357,19 @@ function clearAll() {
     'Waiting for hand...';
 }
 
+// ================= DELETE LAST =================
+
 function deleteLastLetter() {
 
   if (currentWord.length > 0) {
 
-    currentWord = currentWord.slice(0, -1);
+    currentWord =
+      currentWord.slice(0, -1);
 
     letterCount--;
 
     if (letterCount < 0) {
+
       letterCount = 0;
     }
 
@@ -343,3 +380,86 @@ function deleteLastLetter() {
       letterCount;
   }
 }
+
+// ================= FIREBASE AUTH =================
+
+// SIGN UP
+
+function signUp() {
+
+  const email =
+    document.getElementById('email').value;
+
+  const password =
+    document.getElementById('password').value;
+
+  if (!email || !password) {
+
+    alert('Please fill all fields');
+
+    return;
+  }
+
+  auth.createUserWithEmailAndPassword(email, password)
+
+    .then(() => {
+
+      alert('Account Created Successfully');
+
+    })
+
+    .catch((error) => {
+
+      alert(error.message);
+
+    });
+}
+
+// LOGIN
+
+function login() {
+
+  const email =
+    document.getElementById('email').value;
+
+  const password =
+    document.getElementById('password').value;
+
+  if (!email || !password) {
+
+    alert('Please fill all fields');
+
+    return;
+  }
+
+  auth.signInWithEmailAndPassword(email, password)
+
+    .then(() => {
+
+      document.getElementById('login-screen')
+        .style.display = 'none';
+
+    })
+
+    .catch((error) => {
+
+      alert(error.message);
+
+    });
+}
+
+// AUTO LOGIN
+
+auth.onAuthStateChanged((user) => {
+
+  if (user) {
+
+    document.getElementById('login-screen')
+      .style.display = 'none';
+
+  } else {
+
+    document.getElementById('login-screen')
+      .style.display = 'flex';
+  }
+});

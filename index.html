@@ -1,76 +1,312 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Gesture To Voice</title>
-  <link rel="stylesheet" href="styles.css">
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- MediaPipe -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
 </head>
+
 <body>
+
+  <!-- LOGIN SCREEN -->
+
+  <div id="login-screen" class="login-screen">
+
+    <div class="login-box">
+
+      <h1>🤲 Gesture To Voice</h1>
+
+      <p>Login to Continue</p>
+
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter Email"
+      />
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Enter Password"
+      />
+
+      <button onclick="signUp()">
+        Create Account
+      </button>
+
+      <button onclick="login()">
+        Login
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- MAIN APP -->
+
   <div class="app">
 
     <header>
-      <h1>🤲 <span>Gesture</span>To Voice</h1>
-      <div id="status" class="status offline">OFFLINE</div>
+
+      <h1>
+        🤲 <span>Gesture</span>To Voice
+      </h1>
+
+      <div id="status" class="status offline">
+        OFFLINE
+      </div>
+
     </header>
 
     <div class="main">
 
+      <!-- CAMERA SECTION -->
+
       <div class="camera-section">
+
         <div class="video-wrapper">
-          <video id="video" autoplay playsinline></video>
+
+          <video
+            id="video"
+            autoplay
+            playsinline
+          ></video>
+
           <canvas id="canvas"></canvas>
+
         </div>
+
         <div class="detection">
-          <p id="detected">Waiting for hand...</p>
-          <p id="confidence">Confidence: 0%</p>
-          <p id="hold">Hold sign for 1.5s to confirm</p>
+
+          <p id="detected">
+            Waiting for hand...
+          </p>
+
+          <p id="confidence">
+            Confidence: 0%
+          </p>
+
+          <p id="hold">
+            Hold sign for 1.5s to confirm
+          </p>
+
         </div>
+
       </div>
 
+      <!-- OUTPUT SECTION -->
+
       <div class="output-section">
+
         <div class="box">
+
           <h3>CURRENT WORD</h3>
+
           <p id="current-word"></p>
+
         </div>
+
         <div class="box">
+
           <h3>SENTENCE OUTPUT</h3>
+
           <p id="sentence"></p>
+
         </div>
+
+        <!-- BUTTONS -->
+
         <div class="buttons">
-          <button id="startBtn" onclick="startCamera()">▶ Start Camera</button>
-          <button onclick="addSpace()">Space / Add Word</button>
-          <button onclick="speakSentence()">🔊 Speak</button>
-          <button class="delete" onclick="deleteLastLetter()">
-    ⌫ Delete Last
-</button>
-          <button class="clear" onclick="clearAll()">Clear All</button>
+
+          <button
+            id="startBtn"
+            onclick="startCamera()"
+          >
+            ▶ Start Camera
+          </button>
+
+          <button onclick="addSpace()">
+            Space / Add Word
+          </button>
+
+          <button onclick="speakSentence()">
+            🔊 Speak
+          </button>
+
+          <button
+            class="delete"
+            onclick="deleteLastLetter()"
+          >
+            ⌫ Delete Last
+          </button>
+
+          <button
+            class="clear"
+            onclick="clearAll()"
+          >
+            Clear All
+          </button>
+
         </div>
+
+        <!-- STATS -->
+
         <div class="stats">
-          <div><p>Letters</p><h2 id="letterCount">0</h2></div>
-          <div><p>Words</p><h2 id="wordCount">0</h2></div>
+
+          <div>
+            <p>Letters</p>
+            <h2 id="letterCount">0</h2>
+          </div>
+
+          <div>
+            <p>Words</p>
+            <h2 id="wordCount">0</h2>
+          </div>
+
         </div>
+
       </div>
 
     </div>
+
   </div>
-  <!-- Gesture Reference Guide -->
-<div class="guide">
-  <h3>✋ Gesture Reference Guide</h3>
-  <div class="guide-grid">
-    <div class="guide-item">☝️ Index finger up = <b>A</b></div>
-    <div class="guide-item">✌️ Index + Middle up = <b>B</b></div>
-    <div class="guide-item">🤟 Index + Middle + Ring = <b>C</b></div>
-    <div class="guide-item">🖐️ All 4 fingers up = <b>D</b></div>
-    <div class="guide-item">✊ Fist (no fingers) = <b>E</b></div>
-    <div class="guide-item">🤙 Only Pinky up = <b>F</b></div>
-    <div class="guide-item">🤘 Index + Pinky up = <b>G</b></div>
-    <div class="guide-item">👍 Thumb up only = <b>H</b></div>
+
+  <!-- A-Z GUIDE -->
+
+  <div class="guide">
+
+    <h3>✋ Gesture Reference Guide</h3>
+
+    <div class="guide-grid">
+
+      <div class="guide-item">
+        ☝️ 1 Finger = <b>A</b>
+      </div>
+
+      <div class="guide-item">
+        ✌️ 2 Fingers = <b>B</b>
+      </div>
+
+      <div class="guide-item">
+        🤟 3 Fingers = <b>C</b>
+      </div>
+
+      <div class="guide-item">
+        🖐️ 4 Fingers = <b>D</b>
+      </div>
+
+      <div class="guide-item">
+        ✊ Fist = <b>E</b>
+      </div>
+
+      <div class="guide-item">
+        🤙 Pinky Up = <b>F</b>
+      </div>
+
+      <div class="guide-item">
+        🤘 Rock Sign = <b>G</b>
+      </div>
+
+      <div class="guide-item">
+        👍 Thumb Up = <b>H</b>
+      </div>
+
+      <div class="guide-item">
+        👆 = <b>I</b>
+      </div>
+
+      <div class="guide-item">
+        ✌️ = <b>J</b>
+      </div>
+
+      <div class="guide-item">
+        🤟 = <b>K</b>
+      </div>
+
+      <div class="guide-item">
+        🖖 = <b>L</b>
+      </div>
+
+      <div class="guide-item">
+        ✋ = <b>M</b>
+      </div>
+
+      <div class="guide-item">
+        👊 = <b>N</b>
+      </div>
+
+      <div class="guide-item">
+        👌 = <b>O</b>
+      </div>
+
+      <div class="guide-item">
+        🤚 = <b>P</b>
+      </div>
+
+      <div class="guide-item">
+        🫱 = <b>Q</b>
+      </div>
+
+      <div class="guide-item">
+        🤲 = <b>R</b>
+      </div>
+
+      <div class="guide-item">
+        ✊ = <b>S</b>
+      </div>
+
+      <div class="guide-item">
+        ☝️ = <b>T</b>
+      </div>
+
+      <div class="guide-item">
+        ✌️ = <b>U</b>
+      </div>
+
+      <div class="guide-item">
+        🖖 = <b>V</b>
+      </div>
+
+      <div class="guide-item">
+        🖐️ = <b>W</b>
+      </div>
+
+      <div class="guide-item">
+        🤞 = <b>X</b>
+      </div>
+
+      <div class="guide-item">
+        🤙 = <b>Y</b>
+      </div>
+
+      <div class="guide-item">
+        ⚡ = <b>Z</b>
+      </div>
+
+    </div>
+
   </div>
-</div>
+
+  <!-- FIREBASE -->
+
+  <script src="firebase.js"></script>
+
+  <!-- APP -->
+
   <script src="app.js"></script>
+
 </body>
 </html>
