@@ -171,4 +171,20 @@ function clearAll() {
   document.getElementById('letterCount').textContent = '0';
   document.getElementById('wordCount').textContent = '0';
   document.getElementById('detected').textContent = 'Waiting for hand...';
+}function deleteLastLetter() {
+
+    if(currentWord.length > 0){
+
+        currentWord = currentWord.slice(0, -1);
+
+        document.getElementById('current-word').textContent = currentWord;
+
+        letterCount--;
+
+        if(letterCount < 0){
+            letterCount = 0;
+        }
+
+        document.getElementById('letterCount').textContent = letterCount;
+    }
 }

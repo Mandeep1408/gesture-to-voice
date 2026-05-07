@@ -195,4 +195,7 @@ canvas{
   font-size: 1.2rem;
   display: block;
   margin-top: 5px;
+}.delete{
+    background:#3a2a1a !important;
+    color:#ffb347 !important;
 }
