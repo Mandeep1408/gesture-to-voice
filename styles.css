@@ -4,6 +4,7 @@ body {
   background: #0d0d1a;
   color: white;
   font-family: Arial, sans-serif;
+  min-height: 100vh;
 }
 
 header {
@@ -35,17 +36,31 @@ header h1 span { color: #9b59f5; }
   height: calc(100vh - 70px);
 }
 
-.camera-section { flex: 1; }
+.camera-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 
 .video-wrapper {
   position: relative;
   background: #000;
   border-radius: 15px;
   overflow: hidden;
-  height: 70%;
+  flex: 1;
+  min-height: 350px;
 }
 
-video, canvas {
+video {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+canvas {
   position: absolute;
   top: 0; left: 0;
   width: 100%;
@@ -53,13 +68,16 @@ video, canvas {
 }
 
 .detection {
-  margin-top: 15px;
   background: #13132a;
   padding: 15px;
   border-radius: 10px;
 }
 
-.detection p { margin: 5px 0; color: #aaa; }
+.detection p {
+  margin: 5px 0;
+  color: #aaa;
+  font-size: 0.95rem;
+}
 
 .output-section {
   flex: 1;
@@ -76,7 +94,7 @@ video, canvas {
 }
 
 .box h3 {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #666;
   margin-bottom: 10px;
   letter-spacing: 2px;
@@ -85,6 +103,7 @@ video, canvas {
 .box p {
   font-size: 1.5rem;
   color: #fff;
+  min-height: 40px;
 }
 
 .buttons {
@@ -93,20 +112,37 @@ video, canvas {
   flex-wrap: wrap;
 }
 
-button {
-  padding: 12px 20px;
+.buttons button {
+  padding: 14px 20px;
   border: none;
   border-radius: 10px;
   cursor: pointer;
   font-size: 1rem;
   font-weight: bold;
+  flex: 1;
 }
 
-#startBtn { background: #9b59f5; color: white; flex: 1; }
+#startBtn {
+  background: #9b59f5;
+  color: white;
+}
+
 #startBtn:hover { background: #7d3fd4; }
-button:nth-child(2) { background: #2a2a4a; color: white; flex: 1; }
-button:nth-child(3) { background: #2a2a4a; color: white; flex: 1; }
-.clear { background: #4a1a1a; color: #ff4444; flex: 1; }
+
+.buttons button:nth-child(2) {
+  background: #2a2a4a;
+  color: white;
+}
+
+.buttons button:nth-child(3) {
+  background: #2a2a4a;
+  color: white;
+}
+
+.clear {
+  background: #4a1a1a !important;
+  color: #ff4444 !important;
+}
 
 .stats {
   display: flex;
@@ -121,5 +157,13 @@ button:nth-child(3) { background: #2a2a4a; color: white; flex: 1; }
   text-align: center;
 }
 
-.stats p { color: #666; font-size: 0.85rem; }
-.stats h2 { font-size: 2rem; color: white; }
+.stats p {
+  color: #666;
+  font-size: 0.85rem;
+  margin-bottom: 5px;
+}
+
+.stats h2 {
+  font-size: 2rem;
+  color: white;
+}
