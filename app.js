@@ -41,17 +41,16 @@ function setupMediaPipe(video) {
     locateFile: (file) =>
       `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
   });
-
-  hands.setOptions({
+hands.setOptions({
     maxNumHands: 1,
     modelComplexity: 1,
-    minDetectionConfidence: 0.7,
-    minTrackingConfidence: 0.5
-  });
+    minDetectionConfidence: 0.85,
+    minTrackingConfidence: 0.85
+});
 
   hands.onResults((results) => {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+  canvas.width = video.videoWidth;
+canvas.height = video.videoHeight;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
