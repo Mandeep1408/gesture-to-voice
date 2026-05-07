@@ -166,4 +166,37 @@ canvas {
 .stats h2 {
   font-size: 2rem;
   color: white;
+}.guide {
+  background: #13132a;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 15px;
+}
+
+.guide h3 {
+  color: #9b59f5;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.guide-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.guide-item {
+  background: #0d0d1a;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #aaa;
+  text-align: center;
+}
+
+.guide-item b {
+  color: #00ff88;
+  font-size: 1.2rem;
+  display: block;
+  margin-top: 5px;
 }

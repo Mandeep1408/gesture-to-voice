@@ -6,12 +6,6 @@ let lastGesture = '';
 let holdTimer = null;
 let cameraStarted = false;
 
-const fingerGestures = {
-  'thumbs_up': 'A',
-  'peace': 'B',
-  'ok': 'C',
-};
-
 async function startCamera() {
   if (cameraStarted) return;
   cameraStarted = true;
@@ -24,19 +18,17 @@ async function startCamera() {
       video: { width: 640, height: 480 }
     });
     video.srcObject = stream;
+    video.play();
 
     status.textContent = 'ONLINE';
     status.className = 'status online';
-
     document.getElementById('detected').textContent = 'Camera active! Show your hand';
     document.getElementById('startBtn').textContent = '✅ Camera On';
 
     setupMediaPipe(video);
 
   } catch (err) {
-    status.textContent = 'Camera Error';
-    document.getElementById('detected').textContent =
-      'Camera blocked! Please allow camera access';
+    document.getElementById('detected').textContent = 'Camera blocked! Please allow camera access';
     cameraStarted = false;
   }
 }
@@ -71,9 +63,14 @@ function setupMediaPipe(video) {
         { color: '#00ff88', lineWidth: 1, radius: 4 });
 
       const gesture = detectGesture(landmarks);
-      updateGesture(gesture);
-
-      document.getElementById('confidence').textContent = 'Confidence: 95%';
+      if (gesture) {
+        document.getElementById('detected').textContent = `Detected: ${gesture}`;
+        document.getElementById('confidence').textContent = 'Confidence: 95%';
+        updateGesture(gesture);
+      } else {
+        document.getElementById('detected').textContent = 'Hand detected - show a sign';
+        document.getElementById('confidence').textContent = 'Confidence: 0%';
+      }
     } else {
       document.getElementById('detected').textContent = 'Waiting for hand...';
       document.getElementById('confidence').textContent = 'Confidence: 0%';
@@ -89,31 +86,44 @@ function setupMediaPipe(video) {
 }
 
 function detectGesture(landmarks) {
-  const thumbTip = landmarks[4];
-  const indexTip = landmarks[8];
-  const middleTip = landmarks[12];
-  const ringTip = landmarks[16];
-  const pinkyTip = landmarks[20];
-  const indexMCP = landmarks[5];
-  const middleMCP = landmarks[9];
+  const tips = [4, 8, 12, 16, 20];
+  const bases = [2, 5, 9, 13, 17];
 
-  const indexUp = indexTip.y < indexMCP.y;
-  const middleUp = middleTip.y < middleMCP.y;
-  const ringDown = ringTip.y > landmarks[13].y;
-  const pinkyDown = pinkyTip.y > landmarks[17].y;
+  // Check which fingers are up
+  const thumbUp = landmarks[4].x < landmarks[3].x;
+  const indexUp = landmarks[8].y < landmarks[6].y;
+  const middleUp = landmarks[12].y < landmarks[10].y;
+  const ringUp = landmarks[16].y < landmarks[14].y;
+  const pinkyUp = landmarks[20].y < landmarks[18].y;
 
-  if (indexUp && !middleUp && ringDown && pinkyDown) return 'A';
-  if (indexUp && middleUp && ringDown && pinkyDown) return 'B';
-  if (!indexUp && !middleUp && ringDown && pinkyDown) return 'C';
+  // A = only index up
+  if (indexUp && !middleUp && !ringUp && !pinkyUp) return 'A';
+
+  // B = index and middle up
+  if (indexUp && middleUp && !ringUp && !pinkyUp) return 'B';
+
+  // C = index, middle and ring up
+  if (indexUp && middleUp && ringUp && !pinkyUp) return 'C';
+
+  // D = all four fingers up
+  if (indexUp && middleUp && ringUp && pinkyUp) return 'D';
+
+  // E = no fingers up (fist)
+  if (!indexUp && !middleUp && !ringUp && !pinkyUp) return 'E';
+
+  // F = only pinky up
+  if (!indexUp && !middleUp && !ringUp && pinkyUp) return 'F';
+
+  // G = index and pinky up (rock sign)
+  if (indexUp && !middleUp && !ringUp && pinkyUp) return 'G';
+
+  // H = thumb up only
+  if (thumbUp && !indexUp && !middleUp && !ringUp && !pinkyUp) return 'H';
 
   return null;
 }
 
 function updateGesture(gesture) {
-  if (!gesture) return;
-
-  document.getElementById('detected').textContent = `Detected: ${gesture}`;
-
   if (gesture !== lastGesture) {
     lastGesture = gesture;
     clearTimeout(holdTimer);
@@ -156,8 +166,10 @@ function clearAll() {
   sentence = '';
   letterCount = 0;
   wordCount = 0;
+  lastGesture = '';
   document.getElementById('current-word').textContent = '';
   document.getElementById('sentence').textContent = '';
   document.getElementById('letterCount').textContent = '0';
   document.getElementById('wordCount').textContent = '0';
+  document.getElementById('detected').textContent = 'Waiting for hand...';
 }
