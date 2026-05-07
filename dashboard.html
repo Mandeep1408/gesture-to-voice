@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Admin Dashboard</title>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="firebase.js"></script>
+
+  <style>
+
+    body{
+      background:#0b1020;
+      color:white;
+      font-family:Arial;
+      padding:30px;
+    }
+
+    h1{
+      color:#9b59f5;
+      margin-bottom:20px;
+    }
+
+    .card{
+      background:#131a2e;
+      padding:20px;
+      border-radius:15px;
+      margin-bottom:20px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    th,td{
+      border:1px solid #222;
+      padding:12px;
+      text-align:left;
+    }
+
+    th{
+      background:#1f2947;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <h1>🔥 Gesture To Voice Dashboard</h1>
+
+  <div class="card">
+
+    <h2>
+      Total Users:
+      <span id="totalUsers">0</span>
+    </h2>
+
+  </div>
+
+  <div class="card">
+
+    <h2>Registered Users</h2>
+
+    <table>
+
+      <thead>
+
+        <tr>
+          <th>Email</th>
+          <th>Created</th>
+        </tr>
+
+      </thead>
+
+      <tbody id="userTable"></tbody>
+
+    </table>
+
+  </div>
+
+<script>
+
+const db = firebase.firestore();
+
+async function loadUsers(){
+
+  const table =
+    document.getElementById('userTable');
+
+  const totalUsers =
+    document.getElementById('totalUsers');
+
+  const snapshot =
+    await db.collection('users').get();
+
+  totalUsers.textContent = snapshot.size;
+
+  table.innerHTML = '';
+
+  snapshot.forEach((doc)=>{
+
+    const data = doc.data();
+
+    table.innerHTML += `
+
+      <tr>
+        <td>${data.email}</td>
+        <td>${data.createdAt}</td>
+      </tr>
+
+    `;
+  });
+}
+
+loadUsers();
+
+</script>
+
+</body>
+</html>
